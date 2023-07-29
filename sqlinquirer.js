@@ -10,13 +10,13 @@ function getAllEmployees() {
 function getAllDepartments(){
     return db.query('select * from departments');
 }
-inquirer.prompt {[
+inquirer.prompt ([
     {
         name: 'action',
         type: 'list',
         list: ['action1', 'action2'],
     }
-]}.then(async (answers) => {
+]).then(async (answers) => {
     switch (answers.action) {
         case 'action1':
             const employees = await getAllEmployees();
@@ -24,5 +24,7 @@ inquirer.prompt {[
             break;
         case 'action2':
             const departments = await getAllDepartments();
+            //displays depts
+            break;
     }
-})
+});
