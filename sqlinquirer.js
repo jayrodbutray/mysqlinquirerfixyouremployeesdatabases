@@ -2,24 +2,29 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const { createConnection } = require('net');
 
-const db = mysql.createConnection();
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'Janda06232022**',
+    database: 'employee_db',
 
+});
 
-function getAllDepartments(){
-    return db.query('select * from departments');
-}
-function getAllRoles() {
-    return db.query('select * from roles');
-}
-function getAllEmployees() {
-    return db.query('select * from employees');
-}
+db.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+    } else {
+      console.log('Connected to the database.');
+
+    }
+  });
+
 inquirer.prompt ([
     {
         type: 'list',
         name: 'departments',
-        message: 'What would you like to do?',
-        list: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role'],
+        message: 'Welcome to your companys employment database. What would you like to do to begin?',
+        choices: ['view all departments', 'view all roles', 'view all employees', 'add a department', 'add a role', 'add an employee', 'update an employee role'],
     }
 ]).then(async (answers) => {
     switch (answers.action) {
@@ -38,3 +43,13 @@ inquirer.prompt ([
             break;
     }
 });
+
+function getAllDepartments(){
+    return db.query('select * from departments');
+}
+function getAllRoles() {
+    return db.query('select * from roles');
+}
+function getAllEmployees() {
+    return db.query('select * from employees');
+}
