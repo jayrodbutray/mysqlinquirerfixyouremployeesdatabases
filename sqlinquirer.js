@@ -111,7 +111,7 @@ inquirer.prompt ([
                 const addRole = answers.roleName;
                 const deptId = answers.deptId;
                 const salary = answers.salary;
-                const roleQuery = 'INSERT INTO roles (job_title, dept_id, salary) VALUES (?, ?, ?)';
+                const roleQuery = 'INSERT INTO roles (job_title, dept_name, salary) VALUES (?, ?, ?)';
                 try {
                     await db.promise().query(roleQuery, [addRole, deptId, salary]);
                     console.log(`Role '${addRole}' added successfully!`);
@@ -144,9 +144,10 @@ inquirer.prompt ([
                     message: 'Enter the role for the employee:',
                   },
                   {
-                    type: 'input',
+                    type: 'list',
                     name: 'deptId',
-                    message: 'Enter the department name:',
+                    message: 'Which department would you like to add this employee to?',
+                    choices: departments
                   },
                   {
                     type: 'input',
@@ -167,10 +168,11 @@ inquirer.prompt ([
                 const deptId = answers.deptId;
                 const salary = answers.salary;
                 const reportingManager = answers.reportingManager;
-                const employeeQuery = 'INSERT INTO employees (first_name, last_name, job_title, dept_id, salary, reporting_manager) VALUES (?, ?, ?, ?, ?, ?)';
+                const employeeQuery = 'INSERT INTO employees (first_name, last_name, job_title, dept_name, salary, reporting_manager) VALUES (?, ?, ?, ?, ?, ?)';
                 try {
                     await db.promise().query(employeeQuery, [firstName, lastName, role, deptId, salary, reportingManager]);
                     console.log(`Employee '${firstName} ${lastName}' added successfully!`);
+                    console.log(answers);
                 } catch (error){
                     console.error('Error adding department:', error);
                 }
@@ -181,6 +183,38 @@ inquirer.prompt ([
                 menu();
             });
             break;
+
+            case 'update an employee role':
+                inquirer.prompt([
+                  {
+                    type: 'input',
+                    name: 'employeeId',
+                    message: 'Enter the ID of the employee you want to update:',
+                  },
+                  {
+                    type: 'input',
+                    name: 'newRoleId',
+                    message: 'Enter the new role ID for the employee:',
+                  },
+                ])
+                .then(async (answers) => {
+                  const employeeId = answers.employeeId;
+                  const newRoleId = answers.newRoleId;
+                  
+                  const updateQuery = 'UPDATE employees SET job_title = ? WHERE id = ?';
+                  try {
+                    await db.promise().query(updateQuery, [newRoleId, employeeId]);
+                    console.log(`Employee with ID '${employeeId}' role updated successfully!`);
+                  } catch (error) {
+                    console.error('Error updating employee role:', error);
+                  }
+                  menu();
+                })
+                .catch((error) => {
+                  console.error('Error during inquirer prompt:', error);
+                  menu();
+                });
+              break;
 
         case 'Exit':
           db.end(); // Close the database connection before exiting the application
