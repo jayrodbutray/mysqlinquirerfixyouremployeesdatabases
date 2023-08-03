@@ -98,7 +98,7 @@ inquirer.prompt ([
                   {
                     type: 'input',
                     name: 'deptId',
-                    message: 'Enter the department name for the role:',
+                    message: 'Enter the department id for the role:',
                   },
                   {
                     type: 'input',
@@ -131,7 +131,6 @@ inquirer.prompt ([
             if(err) throw err;
 
             let department = res.map(departments => ({name: departments.name, value: departments.id}));
-        
             inquirer.prompt([
                 {
                     type: 'input',
@@ -151,7 +150,7 @@ inquirer.prompt ([
                   {
                     type: 'list',
                     name: 'deptId',
-                    message: 'Which department would you like to add this employee to?',
+                    message: 'Which department id would you like to add this employee to?',
                     choices: department,
                   },
                   {
@@ -163,7 +162,6 @@ inquirer.prompt ([
                     type: 'input',
                     name: 'reportingManager',
                     message: 'Enter the reporting manager name:',
-                    default: null,
                   },
             ])
             .then(async (answers) => {
@@ -177,7 +175,8 @@ inquirer.prompt ([
                 try {
                     await db.promise().query(employeeQuery, [firstName, lastName, role, deptId, salary, reportingManager]);
                     console.log(`Employee '${firstName} ${lastName}' added successfully!`);
-                    console.log(answers);
+
+
                 } catch (error){
                     console.error('Error adding employee:', error);
                 }
@@ -222,12 +221,46 @@ inquirer.prompt ([
                 });
               break;
 
+              case 'update an employee manager':
+                inquirer.prompt([
+                  {
+                    type: 'input',
+                    name: 'employeeId',
+                    message: 'Enter the ID of the employee you want to update:',
+                  },
+                  {
+                    type: 'input',
+                    name: 'newManager',
+                    message: 'Enter the new reporting manager for the employee:',
+                  },
+                ])
+                .then(async (answers) => {
+                  const employeeId = answers.employeeId;
+                  const newManager = answers.newManager;
+                  
+                  const updateManagerQuery = 'UPDATE employees SET reporting_manager = ? WHERE id = ?';
+                  try {
+                    await db.promise().query(updateManagerQuery, [newManager, employeeId]);
+                    console.log(`Employee with ID '${employeeId}' manager updated successfully!`);
+                  } catch (error) {
+                    console.error('Error updating new manager for that employee:', error);
+                  }
+                  menu();
+                })
+                .catch((error) => {
+                  console.error('Error during inquirer prompt:', error);
+                  menu();
+                });
+              break;
+
         case 'Exit':
-          db.end(); // Close the database connection before exiting the application
+          db.end(); 
           console.log('Goodbye!');
+          menu();
           break;
         default:
           console.log('Invalid choice. Please select a valid option.');
+          menu();
           break;
       }
     })
