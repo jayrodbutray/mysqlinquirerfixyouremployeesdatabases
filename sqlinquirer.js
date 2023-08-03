@@ -34,6 +34,8 @@ inquirer.prompt ([
             'add a role', 
             'add an employee', 
             'update an employee role',
+            'update an employee manager',
+            'lookup department budget',
             'Quit',
         ],
     },
@@ -190,11 +192,17 @@ inquirer.prompt ([
             break;
 
         case 'update an employee role':
+            db.query(`SELECT * FROM employees;`, (err,res) => {
+                if(err) throw err;
+    
+                let updatedEmployee = res.map(employees => ({name: employees.name, value: employees.id}));
+
                 inquirer.prompt([
                   {
-                    type: 'input',
+                    type: 'list',
                     name: 'employeeId',
-                    message: 'Enter the ID of the employee you want to update:',
+                    message: 'Select the employee you want to update:',
+                    choices: updatedEmployee,
                   },
                   {
                     type: 'input',
@@ -219,6 +227,7 @@ inquirer.prompt ([
                   console.error('Error during inquirer prompt:', error);
                   menu();
                 });
+            });
               break;
 
               case 'update an employee manager':
@@ -253,11 +262,43 @@ inquirer.prompt ([
                 });
               break;
 
-        case 'Exit':
-          db.end(); 
-          console.log('Goodbye!');
-          menu();
-          break;
+              case 'lookup department budget':
+                    inquirer.prompt([
+                {
+                        type: 'input',
+                        name: 'deptBudget',
+                        message: 'Enter the department ID to lookup its budget:',
+                },
+  ])
+  .then(async (answers) => {
+    const deptBudget = answers.deptBudget;
+
+    const budgetQuery = `
+      SELECT SUM(employees.salary) AS total_budget
+      FROM employees
+      INNER JOIN roles ON employees.job_title = roles.id
+      WHERE roles.dept_id = ?;
+    `;
+
+    try {
+      const [rows] = await db.promise().query(budgetQuery, [deptBudget]);
+      console.log('Rows returned from the database:', rows);
+      const totalBudget = rows[0].total_budget;
+      console.log(`Total budget for Department ID '${deptBudget}': ${totalBudget}`);
+    } catch (error) {
+      console.error('Error fetching department budget:', error);
+    }
+    menu();
+  })
+  .catch((error) => {
+    console.error('Error during inquirer prompt:', error);
+    menu();
+  });
+break;
+
+
+        case 'Quit':
+          process.exit(0); 
         default:
           console.log('Invalid choice. Please select a valid option.');
           menu();
