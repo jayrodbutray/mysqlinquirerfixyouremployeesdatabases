@@ -10,7 +10,6 @@ const db = mysql.createConnection({
 
 });
 
-process.stdin.setMaxListeners(20);
 
 db.connect((err) => {
     if (err) {
@@ -111,7 +110,7 @@ inquirer.prompt ([
                 const addRole = answers.roleName;
                 const deptId = answers.deptId;
                 const salary = answers.salary;
-                const roleQuery = 'INSERT INTO roles (job_title, dept_name, salary) VALUES (?, ?, ?)';
+                const roleQuery = 'INSERT INTO roles (job_title, dept_id, salary) VALUES (?, ?, ?)';
                 try {
                     await db.promise().query(roleQuery, [addRole, deptId, salary]);
                     console.log(`Role '${addRole}' added successfully!`);
@@ -127,6 +126,12 @@ inquirer.prompt ([
             break;
 
             case 'add an employee':
+
+        db.query(`SELECT * FROM departments;`, (err,res) => {
+            if(err) throw err;
+
+            let department = res.map(departments => ({name: departments.name, value: departments.id}));
+        
             inquirer.prompt([
                 {
                     type: 'input',
@@ -147,7 +152,7 @@ inquirer.prompt ([
                     type: 'list',
                     name: 'deptId',
                     message: 'Which department would you like to add this employee to?',
-                    choices: departments
+                    choices: department,
                   },
                   {
                     type: 'input',
@@ -165,26 +170,27 @@ inquirer.prompt ([
                 const firstName = answers.firstName;
                 const lastName = answers.lastName;
                 const role = answers.role;
-                const deptId = answers.deptId;
+                const deptId = parseInt(answers.deptId);
                 const salary = answers.salary;
                 const reportingManager = answers.reportingManager;
-                const employeeQuery = 'INSERT INTO employees (first_name, last_name, job_title, dept_name, salary, reporting_manager) VALUES (?, ?, ?, ?, ?, ?)';
+                const employeeQuery = 'INSERT INTO employees (first_name, last_name, job_title, dept_id, salary, reporting_manager) VALUES (?, ?, ?, ?, ?, ?)';
                 try {
                     await db.promise().query(employeeQuery, [firstName, lastName, role, deptId, salary, reportingManager]);
                     console.log(`Employee '${firstName} ${lastName}' added successfully!`);
                     console.log(answers);
                 } catch (error){
-                    console.error('Error adding department:', error);
+                    console.error('Error adding employee:', error);
                 }
                 menu();
             })
             .catch((error) => {
                 console.error('Error during inquirer prompt:', error);
-                menu();
+                 menu();
+                });
             });
             break;
 
-            case 'update an employee role':
+        case 'update an employee role':
                 inquirer.prompt([
                   {
                     type: 'input',
@@ -194,7 +200,7 @@ inquirer.prompt ([
                   {
                     type: 'input',
                     name: 'newRoleId',
-                    message: 'Enter the new role ID for the employee:',
+                    message: 'Enter the new job title for the employee:',
                   },
                 ])
                 .then(async (answers) => {
