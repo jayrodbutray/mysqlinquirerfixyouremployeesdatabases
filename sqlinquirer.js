@@ -272,7 +272,7 @@ inquirer.prompt ([
   ])
   .then(async (answers) => {
     const deptBudget = answers.deptBudget;
-
+    console.log('Department ID:', deptBudget);
     const budgetQuery = `
       SELECT SUM(employees.salary) AS total_budget
       FROM employees
