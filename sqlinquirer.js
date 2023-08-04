@@ -276,8 +276,7 @@ inquirer.prompt ([
     const budgetQuery = `
       SELECT SUM(employees.salary) AS total_budget
       FROM employees
-      INNER JOIN roles ON employees.job_title = roles.id
-      WHERE roles.dept_id = ?;
+      WHERE dept_id = ?;
     `;
 
     try {
