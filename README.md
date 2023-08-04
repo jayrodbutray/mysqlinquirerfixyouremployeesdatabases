@@ -1,8 +1,8 @@
 # mysqlinquirerfixyouremployeesdatabases
-## Setting up API's allows the frontend to speak to the backend and everything in between. Front end code was already set up and this application allowed for me to create the backend pipelines to talk to the front end so that a user could utilize a Note Taker appliation. This application could allow the user to write notes with Title and Text fields that would serve as reminders. They could also revise and change or even delete if available.
+## Employee databases can help an employer track each departments employees,salaries, and managing personnel. All the code was generated from scratch to allow an employer to create database tables for departments, employees, and roles. You are able to load those each of those databases, add an employee, add a role, add a department, update an employee and employee manager, and look at the budgets for each department.
 
 ### I typically work with the TA's and our star instructor Robbert. Because I interact with them the most, I feel the most comfortable learning in their environment and realm before, during and after class time. I am indebted to Robbert for his constant attention to my many questions and needs who helped me with this assignment.
 
 [Link to github repository](https://github.com/jayrodbutray/mysqlinquirerfixyouremployeesdatabases)
 
-[Link to deployed Heroku application](https://notetakerforallyouprofessional-645b7024c373.herokuapp.com/)
+[Link to Screencastify recording](https://drive.google.com/file/d/1CA0MgCQaZEFE7jFXECBcFy5TWtYDMuoG/view)
